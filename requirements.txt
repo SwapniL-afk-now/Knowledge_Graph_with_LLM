@@ -1,0 +1,7 @@
+datasets
+transformers
+bitsandbytes
+accelerate
+networkx
+torch
+# Add specific versions if necessary, e.g., torch==2.5.1+cu121

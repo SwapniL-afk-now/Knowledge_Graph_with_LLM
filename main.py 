@@ -1,0 +1,76 @@
+# main.py
+"""
+Main script to load data, interact with LLM, build, and save the knowledge graph.
+"""
+
+import torch
+from datasets import load_dataset
+import logging
+
+# Import configurations and functions from other modules
+import config
+from llm_interaction import load_model_and_tokenizer, extract_knowledge
+from graph_builder import build_knowledge_graph, save_graph
+
+# Configure logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
+def main():
+    """Main execution function."""
+    logging.info("--- Starting Knowledge Graph Pipeline ---")
+
+    # 1. Load Dataset
+    try:
+        logging.info(f"Loading dataset '{config.DATASET_NAME}' split '{config.DATASET_SPLIT}'...")
+        dataset = load_dataset(config.DATASET_NAME, split=config.DATASET_SPLIT)
+        output_texts = dataset[config.TEXT_COLUMN]
+        logging.info(f"Loaded {len(output_texts)} texts from column '{config.TEXT_COLUMN}'.")
+    except Exception as e:
+        logging.error(f"Failed to load dataset: {e}")
+        return # Exit if dataset loading fails
+
+    # 2. Load LLM and Tokenizer
+    try:
+        model, tokenizer = load_model_and_tokenizer(
+            model_name=config.MODEL_NAME,
+            quantization_config=config.QUANTIZATION_CONFIG,
+            device_map=config.DEVICE_MAP,
+            trust_remote_code=config.TRUST_REMOTE_CODE
+        )
+    except ValueError as e:
+        logging.error(f"Failed to initialize model: {e}")
+        return # Exit if model loading fails
+
+    # 3. Build Knowledge Graph
+    knowledge_graph = build_knowledge_graph(
+        texts=output_texts,
+        model=model,
+        tokenizer=tokenizer,
+        extract_knowledge_func=extract_knowledge, # Pass the function itself
+        prompt_template=config.EXTRACTION_PROMPT_TEMPLATE,
+        max_new_tokens=config.MAX_NEW_TOKENS,
+        temperature=config.TEMPERATURE,
+        top_p=config.TOP_P,
+        debug_limit=config.DEBUG_EXTRACTION_LIMIT
+    )
+
+    # 4. Save Knowledge Graph
+    if knowledge_graph.number_of_nodes() > 0: # Only save if graph is not empty
+        save_graph(knowledge_graph, config.OUTPUT_GRAPH_FILE)
+    else:
+        logging.warning("Knowledge graph is empty. Skipping save.")
+
+    # 5. Cleanup (Optional)
+    logging.info("Cleaning up resources...")
+    del model
+    del tokenizer
+    del knowledge_graph
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+        logging.info("Cleared CUDA cache.")
+
+    logging.info("--- Knowledge Graph Pipeline Finished ---")
+
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+
+# Virtual environment
+venv/
+env/
+.env
+*.env
+
+# Jupyter Notebook Checkpoints
+.ipynb_checkpoints/
+
+# Output files (optional - decide if you want to track the generated graph)
+*.graphml
+*.json # If you save intermediate results
+
+# IDE specific files
+.idea/
+.vscode/
+
+# OS specific files
+.DS_Store
+Thumbs.db
