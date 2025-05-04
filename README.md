@@ -49,6 +49,3 @@ Execute the main script:
 ```bash
 python main.py
 
-
-
-The primary output is a GraphML file (e.g., dermatology_knowledge_graph.graphml) representing the extracted knowledge graph. This file can be loaded and analyzed using NetworkX or other graph analysis tools.
