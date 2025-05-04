@@ -1,4 +1,4 @@
-# Knowledge_Graph_with_LLM# Perfected-KG: LLM-Powered Knowledge Graph Builder
+#  LLM-Powered Knowledge Graph 
 
 This project uses a Large Language Model (LLM) to extract knowledge triples (Entity1, Relation, Entity2) from text data and build a knowledge graph using NetworkX.
 
@@ -16,7 +16,7 @@ This project uses a Large Language Model (LLM) to extract knowledge triples (Ent
 
 1.  **Clone the repository:**
     ```bash
-    git clone <your-repository-url>
+    git clone https://github.com/SwapniL-afk-now/Knowledge_Graph_with_LLM
     cd perfected-kg
     ```
 
